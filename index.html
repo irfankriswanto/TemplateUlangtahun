@@ -1033,12 +1033,13 @@ I love you, always.💗
         <div class="play" id="playBtn"><svg viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z" />
           </svg></div>
-        <video id="momentVideo" playsinline></video>
+        <video id="momentVideo" playsinline muted></video>
         <span class="video-hint" id="videoHint">🎬 belum ada video</span>
         <div class="video-controls" id="videoControls">
           <button class="vc-btn" id="vcPlayBtn">▶</button>
           <input type="range" class="vc-range" id="vcRange" min="0" max="100" step="0.1" value="0">
           <span class="vc-time" id="vcTime">0:00 / 0:00</span>
+          <button class="vc-btn" id="vcMuteBtn" title="Suara video">🔇</button>
           <button class="vc-btn" id="vcFullBtn">⤢</button>
         </div>
       </div>
@@ -1140,6 +1141,7 @@ I love you, always.💗
     const vcRange = document.getElementById('vcRange');
     const vcTime = document.getElementById('vcTime');
     const vcFullBtn = document.getElementById('vcFullBtn');
+    const vcMuteBtn = document.getElementById('vcMuteBtn');
 
     function formatTime(t) {
       if (!isFinite(t)) return '0:00';
@@ -1153,9 +1155,23 @@ I love you, always.💗
       videoHint.style.display = 'none';
       momentVideo.style.display = 'block';
       videoControls.classList.add('show');
+      momentVideo.muted = true;
+      vcMuteBtn.textContent = '🔇';
       momentVideo.play().catch(() => { });
       vcPlayBtn.textContent = '❚❚';
     }
+    vcMuteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      momentVideo.muted = !momentVideo.muted;
+      vcMuteBtn.textContent = momentVideo.muted ? '🔇' : '🔊';
+      // kalau suara video dinyalakan, lagu latar dipause biar nggak tabrakan
+      if (!momentVideo.muted && !bgm.paused) {
+        bgm.pause();
+        musicBtn.textContent = '♪';
+        playing = false;
+        nowPlaying.classList.remove('show');
+      }
+    });
     playBtn.addEventListener('click', (e) => { e.stopPropagation(); startVideo(); });
     vcPlayBtn.addEventListener('click', (e) => {
       e.stopPropagation();
